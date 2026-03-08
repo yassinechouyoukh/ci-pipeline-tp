@@ -1,0 +1,36 @@
+name: CI PIPELINE
+
+on:
+  push:
+    branches: 
+      - main
+
+  pull_request:
+    branches: 
+      - main
+  
+  workflow_dispatch:
+
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Chekout repository
+          uses: action/checkout@v4
+        
+        - name: set up python  
+          uses: action/setup-python@v5
+          with:
+            python-version: '3.11'
+        
+        - name: installation du dependencies
+          run: pip install -r requirements.txt
+
+        - name: lint le code
+          run: 
+            flake8 app --count -select=E9,F63,F7,F82,F841 --show-source --statistics
+            flake8 app --count --max-complezity=10 --max-line-length=127 --statistics
+            flake8 app --count --max-line-length=127 --statistics
+
+        - name: lancement du tests
+          run: pytest =v --cov=app
